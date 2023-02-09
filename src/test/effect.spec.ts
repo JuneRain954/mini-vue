@@ -14,4 +14,16 @@ describe("effect", () => {
         user.age++;
         expect(nextAge).toBe(12);
     })
+    
+    // effect 返回 runner 函数
+    it("should return runner when call effect", () => {
+        let foo = 10;
+        const runner = effect(() => {
+            foo++;
+            return "foo";
+        });
+        expect(foo).toBe(11);
+        let res = runner();
+        expect(res).toBe("foo");
+    })
 })
