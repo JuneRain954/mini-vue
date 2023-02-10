@@ -1,10 +1,12 @@
-let targetMap = new Map();
-let activeEffect;
+let targetMap = new Map();  // 存放所有响应式对象
+let activeEffect;   // 当前需要被收集的依赖
 
 class reactiveEffect{
     _fn = function(){};
-    constructor(fn){
+    _scheduler: any = null;
+    constructor(fn: any, options: any){
         this._fn = fn;
+        this._scheduler = options?.scheduler;
     }
     
     run(){
@@ -19,8 +21,8 @@ class reactiveEffect{
  *  收集响应式函数 
  * @param fn 目标函数
  */
-export function effect(fn){
-    let _effect = new reactiveEffect(fn);
+export function effect(fn, options?){
+    let _effect = new reactiveEffect(fn, options);
     _effect.run();
     return _effect.run.bind(_effect);
 }
@@ -40,7 +42,7 @@ export function track(target, key){
         depsMap = new Map();
         targetMap.set(target, depsMap);
     }
-    // 每个属性对应一个集合
+    // 每个属性对应一个依赖集合
     let dep = depsMap.get(key);
     if(!dep){
         dep = new Set();
@@ -56,12 +58,12 @@ export function track(target, key){
  * @param key   更新的key
  */
 export function trigger(target, key){
-    // 获取对应的 target
+    // 获取 target 对应的 map
     let depsMap = targetMap.get(target);
-    // 获取对应的事件数组
+    // 获取 key 对应的事件依赖集合
     let dep = depsMap.get(key);
     // 触发依赖
     dep.forEach(effect => {
-        effect.run();
+        effect._scheduler ? effect._scheduler() : effect.run();
     });
 }
