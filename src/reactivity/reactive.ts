@@ -1,19 +1,26 @@
 // reactivity核心逻辑实现
-import { track, trigger } from "./effect";
+import { mutableHandlers, readonlyHandlers } from './baseHandlers';
 
+/**
+ *  生成响应式数据 
+ * @param rawData 数据对象
+ * @returns 
+ */
 export function reactive(rawData) {
-    return new Proxy(rawData, {
-        get(target, key) {
-            // 依赖收集
-            track(target, key);
-            let res = Reflect.get(target, key);
-            return res;
-        },
-        set(target, key, newVal) {
-            let res = Reflect.set(target, key, newVal);
-            // 依赖触发
-            trigger(target, key);
-            return res;
-        }
-    })
+	return createActiveData(rawData, mutableHandlers);
+}
+
+
+/**
+ * 生成只读的数据 
+ * @param rawData 数据对象
+ * @returns 
+ */
+export function readonly(rawData) {
+	return createActiveData(rawData, readonlyHandlers);
+}
+
+
+function createActiveData(rawData, baseHandlers){
+	return new Proxy(rawData, baseHandlers);
 }
