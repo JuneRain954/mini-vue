@@ -1,5 +1,5 @@
 // reactivity核心逻辑实现
-import { mutableHandlers, readonlyHandlers } from './baseHandlers';
+import { mutableHandlers, readonlyHandlers, shallowReadonlyHandlers } from './baseHandlers';
 
 
 export enum ReactiveFlags{
@@ -24,6 +24,15 @@ export function reactive(rawData) {
  */
 export function readonly(rawData) {
 	return createActiveData(rawData, readonlyHandlers);
+}
+
+/**
+ *	生成仅表层只读的数据(嵌套的复杂类型数据可修改) 
+ * @param rawData 数据对象
+ * @returns 
+ */
+export function shallowReadonly(rawData){
+	return createActiveData(rawData, shallowReadonlyHandlers);
 }
 
 /**

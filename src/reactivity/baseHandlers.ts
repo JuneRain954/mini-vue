@@ -6,16 +6,17 @@ import { reactive } from './reactive';
 const get = createGetter();
 const set = createSetter();
 const readonlyGet = createGetter(true);
+const shallowReadonlyGet = createGetter(true, true);
 
 /**
  * 生成 getter  
  * @param isReadonly 是否只读
  * @returns 
  */
-function createGetter(isReadonly = false){
+function createGetter(isReadonly = false, shallowReadonly = false){
 	return function get(target, key){
 			// 依赖收集
-			(!isReadonly) && track(target, key);
+			(!isReadonly && !shallowReadonly) && track(target, key);
 			let res = Reflect.get(target, key);
 
       // 数据的特征判断
@@ -27,7 +28,10 @@ function createGetter(isReadonly = false){
       }
 
       // 嵌套复杂类型数据处理
-      isComplexData(res) && (res = isReadonly ? readonly(res) : reactive(res));
+      if(isComplexData(res)){
+        const needReadonly = (isReadonly && !shallowReadonly);
+        res = needReadonly ? readonly(res) : reactive(res);
+      }
 
 			return res;
 	}	
@@ -58,4 +62,12 @@ export const readonlyHandlers = {
       console.warn(`can not set ${key}`);
 			return true;	
 		}	
+}
+
+export const shallowReadonlyHandlers = {
+  get: shallowReadonlyGet,
+  set(target, key, newVal){
+    console.warn(`can not set ${key}`);
+    return true;
+  }
 }
