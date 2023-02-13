@@ -12,4 +12,18 @@ describe("reactive", () => {
         expect(isReactive(original)).toBe(false);
     })
 
+    // 嵌套数据的响应式/只读
+    it("nested reactive", () => {
+      const original = {
+        nested: { foo: 1 },
+        array: [{bar: 2}],
+      };
+      const observe = reactive(original);
+
+      // 嵌套的复杂类型数据也是响应式的
+      expect(isReactive(observe.nested)).toBe(true);
+      expect(isReactive(observe.array)).toBe(true);
+      expect(isReactive(observe.array[0])).toBe(true);
+    })
+
 })
