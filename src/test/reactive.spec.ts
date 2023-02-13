@@ -1,4 +1,4 @@
-import { reactive, isReactive } from "../reactivity/reactive";
+import { reactive, isReactive, isProxy } from "../reactivity/reactive";
 
 describe("reactive", () => {
     it("happy path", () => {
@@ -10,6 +10,8 @@ describe("reactive", () => {
         // 给定数据是否时响应式的
         expect(isReactive(observe)).toBe(true);
         expect(isReactive(original)).toBe(false);
+
+        expect(isProxy(observe)).toBe(true);
     })
 
     // 嵌套数据的响应式/只读

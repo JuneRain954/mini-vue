@@ -1,4 +1,4 @@
-import { readonly, isReadonly } from '../reactivity/reactive';
+import { readonly, isReadonly, isProxy} from '../reactivity/reactive';
 
 describe("readonly", () => {
   it("happy path", () => {
@@ -13,6 +13,8 @@ describe("readonly", () => {
 
     expect(isReadonly(wrapped.bar)).toBe(true);
     expect(isReadonly(original.bar)).toBe(false);
+
+    expect(isProxy(wrapped)).toBe(true);
   })
 
   it("warn when set", () => {

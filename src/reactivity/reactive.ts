@@ -5,6 +5,7 @@ import { mutableHandlers, readonlyHandlers, shallowReadonlyHandlers } from './ba
 export enum ReactiveFlags{
 	IS_REACTIVE = "__v_is_reactive",
 	IS_READONLY = "__v_is_readonly",
+	IS_PROXY = "__v_is_proxy",
 }
 
 /**
@@ -62,4 +63,9 @@ export function isReactive(data){
  */
 export function isReadonly(data){
 	return !!data[ReactiveFlags.IS_READONLY];
+}
+
+
+export function isProxy(data){
+	return isReactive(data) || isReadonly(data);
 }
