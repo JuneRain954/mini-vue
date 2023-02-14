@@ -78,11 +78,21 @@ export function track(target, key) {
     dep = new Set();
     depsMap.set(key, dep);
   }
+  // 把每个依赖事件收集起来
+  trackEffects(dep);
+}
+
+
+/**
+ * 收集依赖事件 
+ * @param dep 存放依赖的集合
+ */
+export function trackEffects(dep){
+  if(!activeEffect) return;
   dep.add(activeEffect);
   // 反向收集
   activeEffect._deps.add(dep);
 }
-
 
 /**
  * 触发依赖
@@ -92,10 +102,21 @@ export function track(target, key) {
 export function trigger(target, key) {
   // 获取 target 对应的 map
   let depsMap = targetMap.get(target);
+  if(!depsMap) return;
   // 获取 key 对应的事件依赖集合
   let dep = depsMap.get(key);
   // 触发依赖
+  triggerEffects(dep);
+}
+
+/**
+ * 触发依赖事件 
+ * @param dep 存放依赖的集合
+ */
+export function triggerEffects(dep){
+  // 触发收集的所有依赖事件
   dep.forEach(effect => {
     effect._scheduler ? effect._scheduler() : effect.run();
   });
+   
 }
