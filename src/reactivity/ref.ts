@@ -65,3 +65,28 @@ export function isRef(val){
 export function unRef(val){
   return isRef(val) ? val.value : val;
 }
+
+
+/**
+ * 代理访问ref类型的数据 
+ * @param data 目标数据
+ * @returns 
+ */
+export function proxyRefs(data){
+  return new Proxy(data, {
+    get(target, key){
+      const res = Reflect.get(target, key);
+      return unRef(res);
+    },
+    set(target, key, newVal){
+      let res =  true;
+      if(isRef(target[key]) && !isRef(newVal)){
+        // target[key].value = newVal;
+        res = Reflect.set(target[key], "value", newVal);
+      }else{
+         res = Reflect.set(target, key, newVal);
+      }
+      return res;
+    }
+  })
+}
