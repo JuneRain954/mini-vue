@@ -54,10 +54,11 @@ describe("ref", () => {
   it("unRef", () => {
     const a = ref(1);
     expect(unRef(a)).toBe(1);
-    expect(1).toBe(1);
+    expect(unRef(1)).toBe(1);
   })
 
   it("proxyRefs", () => {
+    // TODO proxyRefs 功能的作用：访问 a 的效果等于访问 a.value
     const user = { age: ref(10), name: "jack"};
     const proxyUser = proxyRefs(user);
 

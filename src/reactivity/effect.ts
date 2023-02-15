@@ -1,13 +1,13 @@
 let targetMap = new Map();  // 存放所有响应式对象
 let activeEffect;   // 当前需要被收集的依赖
 
-class reactiveEffect {
+export class ReactiveEffect {
   _fn = function () { };
   _scheduler: any = null;
   _onStop: any = null;
   _deps = new Set();
   active = true;
-  constructor(fn: any, options: any) {
+  constructor(fn: any, options?: any) {
     this._fn = fn;
     this._scheduler = options?.scheduler;
     this._onStop = options?.onStop;
@@ -43,7 +43,7 @@ function cleanupEffect(effect){
  * @param fn 目标函数
  */
 export function effect(fn, options?) {
-  let _effect = new reactiveEffect(fn, options);
+  let _effect = new ReactiveEffect(fn, options);
   _effect.run();
   let runner: any = _effect.run.bind(_effect);
   runner._effect = _effect;
