@@ -6,6 +6,7 @@ class RefImpl{
   #value: any = null;
   #dep = new Set();
   #rawVal: any = null;
+  __v_is_ref = true;
   constructor(val){
     this.#value = createValue(val);
     this.#rawVal = val;
@@ -21,6 +22,9 @@ class RefImpl{
     this.#rawVal = newVal;
     // 触发依赖
     triggerEffects(this.#dep);
+  }
+  getRawVal(){
+    return this.#rawVal;
   }
 }
 
@@ -40,4 +44,24 @@ function createValue(val){
  */
 export function ref(data){
   return new RefImpl(data);
+}
+
+
+/**
+ * 判断数据是否是响应式数据 
+ * @param val 目标数据
+ * @returns 
+ */
+export function isRef(val){
+ return !!val.__v_is_ref; 
+}
+
+
+/**
+ * 如果参数是 ref，则返回内部值，否则返回参数本身
+ * @param val 目标数据
+ * @returns 
+ */
+export function unRef(val){
+  return isRef(val) ? val.value : val;
 }
