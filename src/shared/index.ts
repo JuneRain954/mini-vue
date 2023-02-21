@@ -1,3 +1,9 @@
+export enum DATA_TYPE{
+  String = "[object String]",
+  Object = "[object Object]",
+  Array = "[object Array]",
+}
+
 /**
  * 判断数据是否是复杂数据类型 
  * @param data 目标数据
@@ -17,13 +23,17 @@ export function isEqual(v1, v2){
   return Object.is(v1, v2);
 }
 
+export function isString(data){
+  return getDataType(data) === DATA_TYPE.String;
+}
+
 /**
  * 判断数据是否是对象类型的数据
  * @param data 目标数据
  * @returns 
  */
 export function isObject(data){
-  return getDataType(data) === "[object Object]";
+  return getDataType(data) === DATA_TYPE.Object;
 }
 
 
@@ -33,7 +43,7 @@ export function isObject(data){
  * @returns 
  */
 export function isArray(data){
-  return getDataType(data) === "[object Array]";
+  return getDataType(data) === DATA_TYPE.Array;
 }
 
 
