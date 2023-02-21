@@ -1,2 +1,4 @@
 # 忽略node_modules文件夹里的所有文件
 node_modules/
+# 忽略 lib 目录下的所有文件
+lib/
