@@ -41,12 +41,20 @@ function mountElement(vnode, container){
         el.setAttribute(key, value)
       }
     }else{
-      el.setAttribute(key, val);
+      if(isOn(key)){
+        const event = key.slice(2).toLowerCase();
+        el.addEventListener(event, val);
+      }else{
+        el.setAttribute(key, val);
+      }
     }
   }
 
-
   container.insertBefore(el, null);
+}
+
+function isOn(key){
+  return /^on[A-Z]/.test(key);
 }
 
 
