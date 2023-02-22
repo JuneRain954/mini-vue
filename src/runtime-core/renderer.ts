@@ -20,6 +20,7 @@ function processElement(vnode, container){
 
 function mountElement(vnode, container){
   const el = document.createElement(vnode.type);
+  vnode.el = el;
 
   // TODO 处理 children (String || Array)
   const { children, props} = vnode;
@@ -59,10 +60,12 @@ function processComponent(vnode, container){
 function mountComponent(vnode, container){
   const instance = createComponentInstance(vnode);
   setupComponent(instance);
-  setupRenderEffect(instance, container);
+  setupRenderEffect(instance, vnode, container);
 }
 
-function setupRenderEffect(instance, container){
-  const subTree = instance.render();
+function setupRenderEffect(instance, vnode, container){
+  const proxy = instance.proxy;
+  const subTree = instance.render.call(proxy);
   patch(subTree, container);
+  vnode.el = subTree.el;
 }
