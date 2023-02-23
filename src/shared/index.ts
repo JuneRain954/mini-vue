@@ -55,3 +55,14 @@ export function isArray(data){
 export function getDataType(data){
   return Object.prototype.toString.call(data);
 }
+
+
+/**
+ * 判断对象是否含有给定的 属性  
+ * @param target 目标对象
+ * @param key 属性名
+ * @returns 
+ */
+export function hasOwnProperty(target, key){
+  return Reflect.has(target, key);
+}

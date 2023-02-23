@@ -1,5 +1,7 @@
 import { isObject } from "../shared/index";
 import { PublicInstanceProxyHandlers } from "./componentPublicInstance";
+import { initProps } from './componentProps';
+import { shallowReadonly } from "../reactivity/reactive";
 
 export function createComponentInstance(vnode){
   const component = {
@@ -7,6 +9,7 @@ export function createComponentInstance(vnode){
     type: vnode.type,
     steupState: null,
     proxy: null,
+    props: {},
   };
 
   return component;
@@ -14,8 +17,10 @@ export function createComponentInstance(vnode){
 
 
 export function setupComponent(instance){
-  // TODO initProps   
+  // initProps   
+  initProps(instance, instance.vnode.props);
   // TODO initSlots   
+
   setupStatefulComponent(instance);
 }
 
@@ -25,7 +30,7 @@ function setupStatefulComponent(instance){
   instance.proxy = new Proxy({_: instance}, PublicInstanceProxyHandlers);
   const { setup }  = component;
   if(setup){
-    const setupResult = setup();
+    const setupResult = setup(shallowReadonly(instance.props));
     handleSetupResult(instance, setupResult);
   }
 }

@@ -1,7 +1,9 @@
 import { h } from '../../lib/guide-mini-vue.esm.js';
+import { Foo } from './Foo.js';
 
 window.self = null;
 export const App = {
+  name: "App",
   render(){
     window.self = this;
     // 返回UI
@@ -19,7 +21,10 @@ export const App = {
           console.log("onMousedown");
         }
       },
-      `Hello~ ${this.msg}`
+      [
+        h("div", { id: "test" }, "hi!!"),
+        h(Foo, { count: 1 }, "yo~")
+      ]
     );
   },
   setup(){
