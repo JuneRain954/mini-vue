@@ -2,6 +2,7 @@ import { isObject } from "../shared/index";
 import { PublicInstanceProxyHandlers } from "./componentPublicInstance";
 import { initProps } from './componentProps';
 import { shallowReadonly } from "../reactivity/reactive";
+import { emit } from "./componentEmit";
 
 export function createComponentInstance(vnode){
   const component = {
@@ -10,7 +11,10 @@ export function createComponentInstance(vnode){
     steupState: null,
     proxy: null,
     props: {},
+    emit: () => {},
   };
+
+  component.emit = emit.bind(null, component) as any;
 
   return component;
 }
@@ -30,7 +34,7 @@ function setupStatefulComponent(instance){
   instance.proxy = new Proxy({_: instance}, PublicInstanceProxyHandlers);
   const { setup }  = component;
   if(setup){
-    const setupResult = setup(shallowReadonly(instance.props));
+    const setupResult = setup(shallowReadonly(instance.props), { emit: instance.emit });
     handleSetupResult(instance, setupResult);
   }
 }

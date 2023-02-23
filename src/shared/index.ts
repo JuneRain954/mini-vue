@@ -2,6 +2,7 @@ export enum DATA_TYPE{
   String = "[object String]",
   Object = "[object Object]",
   Array = "[object Array]",
+  Function = "[object Function]",
 }
 
 /**
@@ -46,6 +47,14 @@ export function isArray(data){
   return getDataType(data) === DATA_TYPE.Array;
 }
 
+/**
+ * 判断数据是否是函数类型的数据 
+ * @param data 目标数据
+ * @returns 
+ */
+export function isFunction(data){
+  return getDataType(data) === DATA_TYPE.Function;
+}
 
 /**
  * 获取数据的类型 
@@ -65,4 +74,37 @@ export function getDataType(data){
  */
 export function hasOwnProperty(target, key){
   return Reflect.has(target, key);
+}
+
+
+/**
+ * 输出 on + Event 形式的事件名，如：onAdd 
+ * @param str 字符串
+ * @returns 
+ */
+export function toHandlerKey(str: string){
+  const evtName = camelize(str);
+  return str ? `on${capitalize(evtName)}` : "";
+}
+
+/**
+ * 将字符串的首字符大写  
+ * @param event 事件名
+ * @returns 
+ */
+function capitalize(event){
+  return event[0].toUpperCase() + event.slice(1);
+}
+
+
+/**
+ * 烤肉串形式的字符串转变为驼峰命名形式的字符串 如：add-foo => addFoo 
+ * @param event 事件名
+ * @returns 
+ */
+function camelize(event){
+  const reg = /-(\w)/g; 
+  const handler = (fullMatch, groupMatch) => (groupMatch ? groupMatch.toUpperCase() : "");
+  const res = event.replace(reg, handler);
+  return res;
 }
