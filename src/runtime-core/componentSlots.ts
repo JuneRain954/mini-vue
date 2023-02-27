@@ -4,7 +4,11 @@ import { ShapeFlags } from "../shared/shapeFlags";
 export function initSlots(instance, rawSlots){
   // instance.slots = isArray(rawSlots) ? rawSlots : [rawSlots];
   const needHandleSlot = (instance.vnode.shapeFlag & ShapeFlags.SLOT_CHILDREN);
-  needHandleSlot ? normalizeObjectSlot(instance, rawSlots) : normalizeSlotValue(rawSlots);
+  if(needHandleSlot){
+    normalizeObjectSlot(instance, rawSlots);
+  }else{
+    instance.slots = normalizeSlotValue(rawSlots);
+  }
 }
 
 function normalizeObjectSlot(instance, rawSlots){

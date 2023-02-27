@@ -1,6 +1,7 @@
 import { isArray } from '../shared/index';
 import { ShapeFlags } from '../shared/shapeFlags';
 import { createComponentInstance, setupComponent } from './component';
+import { Fragment, Text } from './vnode';
 
 export function render(vnode, container){
   // TODO 因为参数container暂时没有用到，该情况下使用 rollup 打包会导致打包后的函数不传递该参数，所以需要收到clg一下
@@ -10,9 +11,33 @@ export function render(vnode, container){
 
 function patch(vnode, container){
   // TODO 判断 vnode 类型 => component or element ?
-  const { shapeFlag } = vnode;
-  if(shapeFlag & ShapeFlags.ELEMENT) processElement(vnode, container);
-  if(shapeFlag & ShapeFlags.STATEFUL_COMPONENT) processComponent(vnode, container);
+  const { type, shapeFlag } = vnode;
+  switch(type){
+    case Fragment: {
+      procrssFragment(vnode, container);
+      break;
+    }
+    case Text: {
+      procrssText(vnode, container);
+      break;
+    }
+    default: {
+      if(shapeFlag & ShapeFlags.ELEMENT) processElement(vnode, container);
+      if(shapeFlag & ShapeFlags.STATEFUL_COMPONENT) processComponent(vnode, container);
+      break;
+    }
+  }
+}
+
+function procrssFragment(vnode, container){
+  mountChildren(vnode, container);
+}
+
+function procrssText(vnode, container){
+  const { children } = vnode;
+  const el = document.createTextNode(children);
+  vnode.el = el;
+  container.insertBefore(el, null);
 }
 
 function processElement(vnode, container){

@@ -1,6 +1,14 @@
 import { isArray, isObject, isString } from "../shared/index";
 import { ShapeFlags } from "../shared/shapeFlags";
 
+export const Fragment = Symbol("Fragment");
+export const Text = Symbol("Text");
+
+
+export function createTextVnode(text: String){
+  return createVNode(Text, {}, text);
+}
+
 export function createVNode(type, props?, children?){
   const vnode = {
     el: null,
