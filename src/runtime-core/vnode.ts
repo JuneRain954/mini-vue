@@ -1,4 +1,4 @@
-import { isArray, isString } from "../shared/index";
+import { isArray, isObject, isString } from "../shared/index";
 import { ShapeFlags } from "../shared/shapeFlags";
 
 export function createVNode(type, props?, children?){
@@ -21,4 +21,10 @@ function getShapeFlags(vnode){
   // 根据 children 的类型 (修改)
   isString(children) && (vnode.shapeFlag |= ShapeFlags.TEXT_CHILDREN);
   isArray(children) && (vnode.shapeFlag |= ShapeFlags.ARRAY_CHILDREN);
+  isSlot(vnode) && (vnode.shapeFlag |= ShapeFlags.SLOT_CHILDREN);
+}
+
+function isSlot(vnode){
+  const { children, shapeFlag } = vnode;
+  return (shapeFlag & ShapeFlags.STATEFUL_COMPONENT) && isObject(children);
 }
