@@ -1,5 +1,5 @@
 import { track, trigger } from '../reactivity/effect';
-import { isComplexData } from '../shared';
+import { isComplexData } from '../shared/index';
 import { ReactiveFlags, readonly } from './reactive';
 import { reactive } from './reactive';
 

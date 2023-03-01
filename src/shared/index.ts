@@ -73,6 +73,7 @@ export function getDataType(data){
  * @returns 
  */
 export function hasOwnProperty(target, key){
+  target = target || {};
   return Reflect.has(target, key);
 }
 
