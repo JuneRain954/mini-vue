@@ -1,20 +1,19 @@
+import { effect } from '../reactivity/effect';
 import { isArray } from '../shared/index';
 import { ShapeFlags } from '../shared/shapeFlags';
 import { createComponentInstance, setupComponent } from './component';
 import { Fragment, Text } from './vnode';
 
-export function render(vnode, container, parentComponent){
-  // TODO 因为参数container暂时没有用到，该情况下使用 rollup 打包会导致打包后的函数不传递该参数，所以需要收到clg一下
-  console.log(`[renderer.ts] container: ${container}`);
-  patch(vnode, container, parentComponent);
+export function render(prevVNode, vnode, container, parentComponent){
+  patch(prevVNode, vnode, container, parentComponent);
 }
 
-function patch(vnode, container, parentComponent){
+function patch(prevVNode, vnode, container, parentComponent){
   // TODO 判断 vnode 类型 => component or element ?
   const { type, shapeFlag } = vnode;
   switch(type){
     case Fragment: {
-      procrssFragment(vnode, container, parentComponent);
+      procrssFragment(prevVNode, vnode, container, parentComponent);
       break;
     }
     case Text: {
@@ -22,15 +21,15 @@ function patch(vnode, container, parentComponent){
       break;
     }
     default: {
-      if(shapeFlag & ShapeFlags.ELEMENT) processElement(vnode, container, parentComponent);
+      if(shapeFlag & ShapeFlags.ELEMENT) processElement(prevVNode, vnode, container, parentComponent);
       if(shapeFlag & ShapeFlags.STATEFUL_COMPONENT) processComponent(vnode, container, parentComponent);
       break;
     }
   }
 }
 
-function procrssFragment(vnode, container, parentComponent){
-  mountChildren(vnode, container, parentComponent);
+function procrssFragment(prevVNode, vnode, container, parentComponent){
+  mountChildren(prevVNode, vnode, container, parentComponent);
 }
 
 function procrssText(vnode, container){
@@ -40,12 +39,21 @@ function procrssText(vnode, container){
   container.insertBefore(el, null);
 }
 
-function processElement(vnode, container, parentComponent){
-  // 挂载元素
-  mountElement(vnode, container, parentComponent);
+function processElement(prevVNode, vnode, container, parentComponent){
+  if(!prevVNode){
+    // 挂载元素
+    mountElement(prevVNode, vnode, container, parentComponent);
+  }else{
+    // 更新元素
+    patchElement(prevVNode, vnode, container);
+  }
 }
 
-function mountElement(vnode, container, parentComponent){
+function patchElement(prevVNode, vnode, container){
+  console.log("patchElement: ", prevVNode, vnode);
+}
+
+function mountElement(prevVNode, vnode, container, parentComponent){
   const el = document.createElement(vnode.type);
   vnode.el = el;
 
@@ -54,7 +62,7 @@ function mountElement(vnode, container, parentComponent){
   if(shapeFlag & ShapeFlags.TEXT_CHILDREN){
     el.textContent = children;
   }else if(shapeFlag & ShapeFlags.ARRAY_CHILDREN){
-    mountChildren(vnode, el, parentComponent);
+    mountChildren(prevVNode, vnode, el, parentComponent);
   }
 
   // 处理 props 
@@ -83,8 +91,8 @@ function isOn(key){
 }
 
 
-function mountChildren(vnode, container, parentComponent){
- vnode.children.forEach(v => patch(v, container, parentComponent));
+function mountChildren(prevVNode, vnode, container, parentComponent){
+ vnode.children.forEach(v => patch(prevVNode, v, container, parentComponent));
 }
 
 function processComponent(vnode, container, parentComponent){
@@ -99,8 +107,20 @@ function mountComponent(vnode, container, parentComponent){
 }
 
 function setupRenderEffect(instance, vnode, container){
-  const proxy = instance.proxy;
-  const subTree = instance.render.call(proxy);
-  patch(subTree, container, instance);
-  vnode.el = subTree.el;
+  effect(() => {
+    if(!instance.isMounted){
+      const proxy = instance.proxy;
+      const subTree = (instance.subTree = instance.render.call(proxy));
+      patch(null, subTree, container, instance);
+      vnode.el = subTree.el;
+      instance.isMounted = true;
+    }else{
+      const proxy = instance.proxy;
+      const subTree = instance.render.call(proxy);
+      const prevSubTree = instance.subTree;
+      instance.subTree = subTree;
+      patch(prevSubTree, subTree, container, instance);
+      vnode.el = subTree.el;
+    }
+  })
 }

@@ -2,3 +2,5 @@
 node_modules/
 # 忽略 lib 目录下的所有文件
 lib/
+# 忽略 exercise 目录下的所有文件
+exercise/

@@ -1,5 +1,5 @@
 import {  trackEffects, triggerEffects } from '../reactivity/effect';
-import { isComplexData, isEqual } from '../shared';
+import { isComplexData, isEqual } from '../shared/index';
 import { reactive } from './reactive';
 
 class RefImpl{

@@ -5,7 +5,7 @@ export const Fragment = Symbol("Fragment");
 export const Text = Symbol("Text");
 
 
-export function createTextVnode(text: String){
+export function createTextVNode(text: String){
   return createVNode(Text, {}, text);
 }
 
