@@ -1,11 +1,16 @@
 import { effect } from '../reactivity/effect';
+import { deleteProperty, hasOwnProperty } from '../shared/index';
 import { ShapeFlags } from '../shared/shapeFlags';
 import { createComponentInstance, setupComponent } from './component';
 import { createAppAPI } from './createApp';
 import { Fragment, Text } from './vnode';
 
 export function createRenderer(options){
-  const { createElement, patchProp, insert } = options;
+  const { 
+    createElement: hostCreateElement,
+    patchProp: hostPatchProp,
+    insert: hostInsert
+  } = options;
 
   function render(prevVNode, vnode, container, parentComponent){
     patch(prevVNode, vnode, container, parentComponent);
@@ -54,11 +59,34 @@ export function createRenderer(options){
 
   function patchElement(prevVNode, vnode, container){
     console.log("patchElement: ", prevVNode, vnode);
+    // 更新 props
+    const oldProps = prevVNode.props || {};
+    const newProps = vnode.props || {};
+    const el = (vnode.el = prevVNode.el);
+    patchProps(el, oldProps, newProps);
+  }
+
+  function patchProps(el, oldProps, newProps){
+    // 更新
+    for (const key in newProps) {
+      let oldVal = oldProps[key];
+      let newVal = newProps[key];
+      if(newVal != oldVal){
+        hostPatchProp(el, key, oldVal, newVal);
+        deleteProperty(oldProps, key);
+      }
+    }
+    // 删除
+    for(const key in oldProps){
+      if(!hasOwnProperty(newProps, key)){
+        hostPatchProp(el, key, oldProps[key], null);
+      }
+    }
   }
 
   function mountElement(prevVNode, vnode, container, parentComponent){
     // 创建 element
-    const el = createElement(vnode.type);
+    const el = hostCreateElement(vnode.type);
     // const el = document.createElement(vnode.type);
     vnode.el = el;
 
@@ -73,7 +101,7 @@ export function createRenderer(options){
     // 处理 props 
     for(let key in props){
       const val = props[key];
-      patchProp(el, key, val);
+      hostPatchProp(el, key, null, val);
 
       // if(isArray(val)){
       //   if(key === "class"){
@@ -91,7 +119,7 @@ export function createRenderer(options){
     }
 
     // 插入 element
-    insert(el, container);
+    hostInsert(el, container);
     // container.insertBefore(el, null);
   }
 
@@ -114,12 +142,14 @@ export function createRenderer(options){
   function setupRenderEffect(instance, vnode, container){
     effect(() => {
       if(!instance.isMounted){
+        // 初始化
         const proxy = instance.proxy;
         const subTree = (instance.subTree = instance.render.call(proxy));
         patch(null, subTree, container, instance);
         vnode.el = subTree.el;
         instance.isMounted = true;
       }else{
+        // 更新
         const proxy = instance.proxy;
         const subTree = instance.render.call(proxy);
         const prevSubTree = instance.subTree;

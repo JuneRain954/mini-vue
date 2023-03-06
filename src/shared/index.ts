@@ -77,6 +77,16 @@ export function hasOwnProperty(target, key){
   return Reflect.has(target, key);
 }
 
+/**
+ *  删除目标对象的给定属性
+ * @param target 目标对象
+ * @param key 给定的属性名 
+ * @returns 
+ */
+export function deleteProperty(target, key){
+  return Reflect.deleteProperty(target, key);
+}
+
 
 /**
  * 输出 on + Event 形式的事件名，如：onAdd 
