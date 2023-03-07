@@ -53,8 +53,28 @@ function insert(el, container){
   container.insertBefore(el, null);
 }
 
+/**
+ * 移除元素
+ * @param el 目标元素
+ */
+function remove(el){
+  el.remove();
+  // const parent = el.parentNode;
+  // parent.removeChild(el);
+}
+
+/**
+ * 设置文本内容
+ * @param el 目标元素
+ * @param txt 文本内容
+ */
+function setElementText(el, txt){
+  el.textContent = txt;
+}
+
 // 创建渲染器
-const renderer: any = createRenderer({ createElement, patchProp, insert });
+const renderer: any = createRenderer({ createElement, patchProp, insert, remove, setElementText });
+
 
 export function createApp(...args){
   return renderer.createApp(...args);
