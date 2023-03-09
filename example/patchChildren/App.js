@@ -15,9 +15,9 @@ export const App = {
       // children: Text => Text
       // h(TextToText),
       // children: Text => Array
-      h(TextToArray),
+      // h(TextToArray),
       // children: Array => Array
-      // h(ArrayToArray),
+      h(ArrayToArray),
     ]);
   },
   setup(){

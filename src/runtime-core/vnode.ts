@@ -13,6 +13,7 @@ export function createVNode(type, props?, children?){
   const vnode = {
     el: null,
     type,
+    key: props ? props.key : undefined,
     props,
     children,
     shapeFlag: null,

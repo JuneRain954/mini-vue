@@ -49,8 +49,8 @@ function isOn(key){
  * @param el 元素
  * @param container 包裹元素的容器
  */
-function insert(el, container){
-  container.insertBefore(el, null);
+function insert(el, container, anchor = null){
+  container.insertBefore(el, anchor);
 }
 
 /**
