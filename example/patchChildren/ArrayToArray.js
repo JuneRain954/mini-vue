@@ -74,7 +74,7 @@ const nextChild = [
 // 4.2 右侧
 // a (b c)
 // (b c)
-const prevChild = [
+/* const prevChild = [
   h("p", {key: "A"}, "A"),
   h("p", {key: "B"}, "B"),
   h("p", {key: "C"}, "C"),
@@ -82,7 +82,52 @@ const prevChild = [
 const nextChild = [
   h("p", {key: "B"}, "B"),
   h("p", {key: "C"}, "C"),
+]; */
+
+
+// 5. 中间对比
+// 5.1 删除老的 (节点在老的里面存在，新的里面不存在)
+// a b (c d) f g
+// a b (e c) f g
+// D 节点在新的里面不存在，需删除；C节点的 props 发生变化，需更新
+/* const prevChild = [
+  h("p", {key: "A"}, "A"),
+  h("p", {key: "B"}, "B"),
+  h("p", {key: "C", id: "prevId"}, "C"),
+  h("p", {key: "D"}, "D"),
+  h("p", {key: "F"}, "F"),
+  h("p", {key: "G"}, "G"),
 ];
+const nextChild = [
+  h("p", {key: "A"}, "A"),
+  h("p", {key: "B"}, "B"),
+  h("p", {key: "E"}, "E"),
+  h("p", {key: "C", id: "nextId"}, "C"),
+  h("p", {key: "F"}, "F"),
+  h("p", {key: "G"}, "G"),
+]; */
+
+// 5.1.1 老的比新的多(多余旧节点直接删除)
+// a b (c e d) f g
+// a b (e c) f g
+const prevChild = [
+  h("p", {key: "A"}, "A"),
+  h("p", {key: "B"}, "B"),
+  h("p", {key: "C", id: "prevId"}, "C"),
+  h("p", {key: "E"}, "E"),
+  h("p", {key: "D"}, "D"),
+  h("p", {key: "F"}, "F"),
+  h("p", {key: "G"}, "G"),
+];
+const nextChild = [
+  h("p", {key: "A"}, "A"),
+  h("p", {key: "B"}, "B"),
+  h("p", {key: "E"}, "E"),
+  h("p", {key: "C", id: "nextId"}, "C"),
+  h("p", {key: "F"}, "F"),
+  h("p", {key: "G"}, "G"),
+];
+
 
 export const ArrayToArray = {
   name: "ArrayToArray",

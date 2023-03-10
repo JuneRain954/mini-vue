@@ -146,6 +146,41 @@ export function createRenderer(options){
       // 老的比新的多
       const dirtyChildren = prevChildren.slice(i, e1 + 1);
       unmountChildren(dirtyChildren);
+    }else{
+      // 中间部分对比 ( i <= e1 && i <= e2 )
+      // 遍历新数组，建立 key - index 的映射
+      let keyToIndexMap = new Map();
+      for(let j = i; j <= e2; j++){
+        const key = nextChildren[j].key;
+        keyToIndexMap.set(key, j);
+      }
+      // 遍历旧数组，逐一对比旧节点在新数组中是否存在
+      let updatableCount = e2 - i + 1;
+      let hasBeenPatched = 0;
+      for(let j = i; j <= e1; j++){
+        // 节点更新数量大于等于可更新数量
+        if(hasBeenPatched >= updatableCount){
+          hostRemove(prevChildren[j].el);
+          continue;
+        }
+        const key = prevChildren[j].key;
+        let targetIdx = keyToIndexMap.get(key);
+        if(targetIdx == undefined){
+          // 映射中找不到则遍历新数组逐个对比
+          for(let k = i; k <= e2; k++){
+            if(!isSameNodeType(prevChildren[j], nextChildren[k])) continue;
+            targetIdx = k;
+            break;
+          }
+        }
+        // 更新或删除
+        if(targetIdx != undefined){
+          patch(prevChildren[j], nextChildren[targetIdx], container, parentComponent, null)
+          hasBeenPatched++;
+        }else{
+          hostRemove(prevChildren[j].el);
+        }
+      }
     }
   }
 
