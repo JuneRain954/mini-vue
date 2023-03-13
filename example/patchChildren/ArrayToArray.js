@@ -110,7 +110,7 @@ const nextChild = [
 // 5.1.1 老的比新的多(多余旧节点直接删除)
 // a b (c e d) f g
 // a b (e c) f g
-const prevChild = [
+/* const prevChild = [
   h("p", {key: "A"}, "A"),
   h("p", {key: "B"}, "B"),
   h("p", {key: "C", id: "prevId"}, "C"),
@@ -124,6 +124,76 @@ const nextChild = [
   h("p", {key: "B"}, "B"),
   h("p", {key: "E"}, "E"),
   h("p", {key: "C", id: "nextId"}, "C"),
+  h("p", {key: "F"}, "F"),
+  h("p", {key: "G"}, "G"),
+]; */
+
+// 5.2 移动 (节点存在与新的和老的里面，但是位置变了)
+// 5.2.1
+// a b (c d e) f g
+// a b (e c d) f g
+// 最长子序列: [1, 2]
+/* const prevChild = [
+  h("p", {key: "A"}, "A"),
+  h("p", {key: "B"}, "B"),
+  h("p", {key: "C", id: "prevId"}, "C"),
+  h("p", {key: "D"}, "D"),
+  h("p", {key: "E"}, "E"),
+  h("p", {key: "F"}, "F"),
+  h("p", {key: "G"}, "G"),
+];
+const nextChild = [
+  h("p", {key: "A"}, "A"),
+  h("p", {key: "B"}, "B"),
+  h("p", {key: "E"}, "E"),
+  h("p", {key: "C", id: "nextId"}, "C"),
+  h("p", {key: "D"}, "D"),
+  h("p", {key: "F"}, "F"),
+  h("p", {key: "G"}, "G"),
+]; */
+
+
+// 5.3 创建新的节点
+// a b (c e) f g
+// a b (e c d) f g
+/* const prevChild = [
+  h("p", {key: "A"}, "A"),
+  h("p", {key: "B"}, "B"),
+  h("p", {key: "C", id: "prevId"}, "C"),
+  h("p", {key: "E"}, "E"),
+  h("p", {key: "F"}, "F"),
+  h("p", {key: "G"}, "G"),
+];
+const nextChild = [
+  h("p", {key: "A"}, "A"),
+  h("p", {key: "B"}, "B"),
+  h("p", {key: "E"}, "E"),
+  h("p", {key: "C", id: "nextId"}, "C"),
+  h("p", {key: "D"}, "D"),
+  h("p", {key: "F"}, "F"),
+  h("p", {key: "G"}, "G"),
+]; */
+
+// 6. 综合例子
+// a b (c d e z) f g
+// a b (d c y e) f g
+const prevChild = [
+  h("p", {key: "A"}, "A"),
+  h("p", {key: "B"}, "B"),
+  h("p", {key: "C", id: "prevId"}, "C"),
+  h("p", {key: "D"}, "D"),
+  h("p", {key: "E"}, "E"),
+  h("p", {key: "Z"}, "Z"),
+  h("p", {key: "F"}, "F"),
+  h("p", {key: "G"}, "G"),
+];
+const nextChild = [
+  h("p", {key: "A"}, "A"),
+  h("p", {key: "B"}, "B"),
+  h("p", {key: "D"}, "D"),
+  h("p", {key: "C", id: "nextId"}, "C"),
+  h("p", {key: "Y"}, "Y"),
+  h("p", {key: "E"}, "E"),
   h("p", {key: "F"}, "F"),
   h("p", {key: "G"}, "G"),
 ];

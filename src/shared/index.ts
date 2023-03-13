@@ -119,3 +119,73 @@ function camelize(event){
   const res = event.replace(reg, handler);
   return res;
 }
+
+
+/**
+ * 获取最长递增子序列
+ * @param arr 数组
+ * @returns 最长递增子序列数组
+ */
+export function getSequence(arr) {
+  const p = arr.slice();
+  const result = [0];
+  let i, j, u, v, c;
+  const len = arr.length;
+  for (i = 0; i < len; i++) {
+      const arrI = arr[i];
+      if (arrI !== 0) {
+          j = result[result.length - 1];
+          if (arr[j] < arrI) {
+              p[i] = j;
+              result.push(i);
+              continue;
+          }
+          u = 0;
+          v = result.length - 1;
+          while (u < v) {
+              c = (u + v) >> 1;
+              if (arr[result[c]] < arrI) {
+                  u = c + 1;
+              }
+              else {
+                  v = c;
+              }
+          }
+          if (arrI < arr[result[u]]) {
+              if (u > 0) {
+                  p[i] = result[u - 1];
+              }
+              result[u] = i;
+          }
+      }
+  }
+  u = result.length;
+  v = result[u - 1];
+  while (u-- > 0) {
+      result[u] = v;
+      v = p[v];
+  }
+  return result;
+}
+
+/**
+ * 二分法寻找对比值的下标
+ * @param arr 目标数组
+ * @param value 对比值
+ * @returns 下标
+ */
+export function binarySearch(arr, value){
+  let beginIdx = 0;
+  let tailIdx = arr.length - 1;
+  let midIdx, targetIdx;
+  while(beginIdx <= tailIdx){
+    midIdx = Math.floor((beginIdx + tailIdx) / 2);
+    const midVal = arr[midIdx];
+    if(midVal === value){
+      targetIdx = midVal;
+      break;
+    }
+    (midVal > value) ? (tailIdx = midIdx - 1) : (beginIdx = midIdx + 1);
+  }
+  return targetIdx;
+}

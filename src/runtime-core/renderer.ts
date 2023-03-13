@@ -1,9 +1,12 @@
 import { effect } from '../reactivity/effect';
-import { deleteProperty, hasOwnProperty, isArray } from '../shared/index';
+import { binarySearch, deleteProperty, getSequence, hasOwnProperty, isArray } from '../shared/index';
 import { ShapeFlags } from '../shared/shapeFlags';
 import { createComponentInstance, setupComponent } from './component';
 import { createAppAPI } from './createApp';
 import { Fragment, Text } from './vnode';
+
+
+const ARRAY_INITIAL_VALUE = Infinity; 
 
 export function createRenderer(options){
   const { 
@@ -157,6 +160,7 @@ export function createRenderer(options){
       // 遍历旧数组，逐一对比旧节点在新数组中是否存在
       let updatableCount = e2 - i + 1;
       let hasBeenPatched = 0;
+      let newIndexToOldIndexMap = getNewIndexToOldIndexMap(updatableCount);
       for(let j = i; j <= e1; j++){
         // 节点更新数量大于等于可更新数量
         if(hasBeenPatched >= updatableCount){
@@ -173,16 +177,43 @@ export function createRenderer(options){
             break;
           }
         }
-        // 更新或删除
+        // 更新或删除元素
         if(targetIdx != undefined){
           patch(prevChildren[j], nextChildren[targetIdx], container, parentComponent, null)
           hasBeenPatched++;
+          newIndexToOldIndexMap[targetIdx - i] = j;
         }else{
           hostRemove(prevChildren[j].el);
         }
       }
+      // 移动或创建元素
+      const indexSequence = getSequence(newIndexToOldIndexMap);
+      const len = newIndexToOldIndexMap.length - 1;
+      for(let k = len; k >= 0; k--) {
+        const index = newIndexToOldIndexMap[k];
+        const baseIdx = i + k;
+        const el = nextChildren[baseIdx].el;
+        const anchor = (baseIdx + 1) < nextChildren.length ? nextChildren[baseIdx + 1].el : null;
+        if(index === ARRAY_INITIAL_VALUE){
+          patch(null, nextChildren[baseIdx], container, parentComponent, anchor);
+        }else{
+          let isExist = binarySearch(indexSequence, k);
+          if(isExist != undefined) continue;
+          hostInsert(el, container, anchor);
+        }
+      }
     }
   }
+
+  function getNewIndexToOldIndexMap(length, initialValue = ARRAY_INITIAL_VALUE){
+    let arr = new Array(length);
+    for(let i = 0; i < length; i++){
+      arr[i] = initialValue;
+    }
+    return arr;
+  }
+
+
 
   function isSameNodeType(vnode1, vnode2){
     return (vnode1.type === vnode2.type) && (vnode1.key === vnode2.key);
